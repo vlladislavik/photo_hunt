@@ -1,10 +1,8 @@
 import pygame
 import random
 
-# Инициализация Pygame
 pygame.init()
 
-# Размеры экрана
 screen_width = 1920
 screen_height = 1080
 
@@ -14,28 +12,12 @@ pygame.mixer.music.set_volume(0.2)
 
 camera_sound = pygame.mixer.Sound('camera_sound.wav')
 
-# Инициализация экрана
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Duck Hunt")
+pygame.display.set_caption("Фотоохота")
 
-
-# Цвета
 white = (255, 255, 255)
 black = (0, 0, 0)
 
-# Загрузка изображений
-duck_image_1 = pygame.image.load("duck1.png")  # Загрузите изображение утки duck1
-duck_image_2 = pygame.image.load("duck2.png")  # Загрузите изображение утки duck2
-duck_image_3 = pygame.image.load("duck3.png")  # Загрузите изображение утки duck3
-duck_image_4 = pygame.image.load("duck4.png")  # Загрузите изображение утки duck4
-
-vorobey_image_1 = pygame.image.load("vorobey1.png")
-vorobey_image_2 = pygame.image.load("vorobey2.png")
-vorobey_image_3 = pygame.image.load("vorobey3.png")
-vorobey_image_4 = pygame.image.load("vorobey4.png")
-
-
-# Переменные состояния
 score = 0
 
 
@@ -239,9 +221,6 @@ class Photo:
         screen.blit(name, (825, 649))
 
 
-
-
-
 def place():
     global animal
 
@@ -268,7 +247,6 @@ def shot(score):
     if animal.duck_rect.collidepoint(event.pos):
         photo = Photo()
         photo.run()
-        pygame.time.delay(3000)
         place()
         score += 1
         print('1')
@@ -276,20 +254,16 @@ def shot(score):
 
 
 def fill():
-    global white, black, duck_rect, current_duck_index, duck_images
+    global white, black
 
-    # Закрасить экран белым цветом
     screen.fill(white)
 
-    # Сохранить копию прямоугольника утки
     duck_rect_copy = animal.duck_rect.copy()
 
-    # Закрасить область прямоугольника утки черным цветом
     pygame.draw.rect(screen, black, duck_rect_copy)
 
     pygame.display.flip()
 
-    # Задержка на 3 секунды
     pygame.time.delay(30)
 
 
@@ -298,7 +272,6 @@ def shaking():
     return coords
 
 
-# Основной цикл игры
 running = True
 clock = pygame.time.Clock()
 duck_animation_timer = pygame.time.get_ticks()
@@ -317,26 +290,23 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Левая кнопка мыши
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             animal.duck_rect.x, score = shot(score)
 
-    # Проверить, если утка заходит за пределы экрана
     if animal.duck_rect.left > screen_width or animal.duck_rect.right < 0:
         place()
 
-    # Обновление анимации утки каждую секунду
     current_time = pygame.time.get_ticks()
     if current_time - animal.duck_animation_timer >= 200:
         animal.update(current_time)
 
-    animal.duck_rect.move_ip(2 * animal.direction, 0)  # Обновление положения утки
+    animal.duck_rect.move_ip(2 * animal.direction, 0)
 
-    # Отобразить фон на экране
     background = pygame.image.load("background_for_project.png")
     screen.blit(background, (0, 0))
 
     current_duck_image = animal.duck_images[animal.current_duck_index]
-    screen.blit(current_duck_image, animal.duck_rect)  # Отобразить утку
+    screen.blit(current_duck_image, animal.duck_rect)
 
     if cloud.cloud_rect.left > screen_width or cloud.cloud_rect.right < 0:
         cloud.place()
@@ -357,7 +327,6 @@ while running:
     if 600 < animal.duck_rect.y < 900:
         screen.blit(current_duck_image, animal.duck_rect)
 
-    # Отобразить счёт
     font = pygame.font.Font(None, 36)
     score_text = font.render("Score: " + str(score), True, black)
     screen.blit(score_text, (10, 10))
@@ -365,5 +334,5 @@ while running:
     pygame.display.flip()
     clock.tick(60)
 
-# Завершение Pygame
+
 pygame.quit()
