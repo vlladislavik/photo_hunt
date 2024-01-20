@@ -1,0 +1,369 @@
+import pygame
+import random
+
+# Инициализация Pygame
+pygame.init()
+
+# Размеры экрана
+screen_width = 1920
+screen_height = 1080
+
+pygame.mixer.music.load('background_music.wav')
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.2)
+
+camera_sound = pygame.mixer.Sound('camera_sound.wav')
+
+# Инициализация экрана
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Duck Hunt")
+
+
+# Цвета
+white = (255, 255, 255)
+black = (0, 0, 0)
+
+# Загрузка изображений
+duck_image_1 = pygame.image.load("duck1.png")  # Загрузите изображение утки duck1
+duck_image_2 = pygame.image.load("duck2.png")  # Загрузите изображение утки duck2
+duck_image_3 = pygame.image.load("duck3.png")  # Загрузите изображение утки duck3
+duck_image_4 = pygame.image.load("duck4.png")  # Загрузите изображение утки duck4
+
+vorobey_image_1 = pygame.image.load("vorobey1.png")
+vorobey_image_2 = pygame.image.load("vorobey2.png")
+vorobey_image_3 = pygame.image.load("vorobey3.png")
+vorobey_image_4 = pygame.image.load("vorobey4.png")
+
+
+# Переменные состояния
+score = 0
+
+
+class Duck:
+    def __init__(self):
+        self.name = 'Утка'
+
+        self.duck_rect = pygame.Rect(0, 0, 0, 0)
+
+        self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4 = (pygame.image.load('duck1.png'),
+                                                                                      pygame.image.load('duck2.png'),
+                                                                                      pygame.image.load('duck3.png'),
+                                                                                      pygame.image.load('duck4.png'))
+        self.duck_images = [self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4]
+
+        self.current_duck_index = 0
+
+        self.duck_rect = self.duck_images[self.current_duck_index].get_rect()
+
+        self.duck_rect.y = random.randint(100, screen_height - 350)
+
+        self.direction = random.choice([-1, 1])
+        if self.direction == 1:
+            self.duck_rect.x = -100
+        else:
+            self.duck_rect.x = screen_width - 150
+
+        self.clock = pygame.time.Clock()
+        self.duck_animation_timer = pygame.time.get_ticks()
+        self.bush_animation_timer = pygame.time.get_ticks()
+
+        if self.direction == 1:
+            self.duck_images = [pygame.transform.flip(self.duck_image_1, True, False),
+                                pygame.transform.flip(self.duck_image_2, True, False),
+                                pygame.transform.flip(self.duck_image_3, True, False),
+                                pygame.transform.flip(self.duck_image_4, True, False),
+                                pygame.transform.flip(self.duck_image_3, True, False),
+                                pygame.transform.flip(self.duck_image_2, True, False),
+                                pygame.transform.flip(self.duck_image_1, True, False)]
+        else:
+            self.duck_images = [self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4,
+                                self.duck_image_3, self.duck_image_2, self.duck_image_1]
+
+    def update(self, current_time):
+        self.duck_animation_timer = current_time
+        self.current_duck_index += 1
+        if self.current_duck_index > len(self.duck_images) - 1:
+            self.current_duck_index = 0
+
+        if self.duck_rect.left > screen_width or self.duck_rect.right < 0:
+            place()
+
+    def images(self):
+        duck_images = self.duck_images
+        duck_rect = self.duck_rect
+        return duck_images, duck_rect
+
+
+class Vorobey:
+    def __init__(self):
+        self.name = 'Воробей'
+
+        self.duck_rect = pygame.Rect(0, 0, 0, 0)
+
+        self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4 = (pygame.image.load('vorobey1.png'),
+                                                                                      pygame.image.load('vorobey2.png'),
+                                                                                      pygame.image.load('vorobey3.png'),
+                                                                                      pygame.image.load('vorobey4.png'))
+        self.duck_images = [self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4]
+
+        self.current_duck_index = 0
+
+        self.duck_rect = self.duck_images[self.current_duck_index].get_rect()
+
+        self.duck_rect.y = random.randint(100, screen_height - 350)
+
+        self.direction = random.choice([-1, 1])
+        if self.direction == 1:
+            self.duck_rect.x = -100
+        else:
+            self.duck_rect.x = screen_width - 150
+
+        self.clock = pygame.time.Clock()
+        self.duck_animation_timer = pygame.time.get_ticks()
+        self.bush_animation_timer = pygame.time.get_ticks()
+
+        if self.direction == 1:
+            self.duck_images = [pygame.transform.flip(self.duck_image_1, True, False),
+                                pygame.transform.flip(self.duck_image_2, True, False),
+                                pygame.transform.flip(self.duck_image_3, True, False),
+                                pygame.transform.flip(self.duck_image_4, True, False),
+                                pygame.transform.flip(self.duck_image_3, True, False),
+                                pygame.transform.flip(self.duck_image_2, True, False),
+                                pygame.transform.flip(self.duck_image_1, True, False)]
+        else:
+            self.duck_images = [self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4,
+                                self.duck_image_3, self.duck_image_2, self.duck_image_1]
+
+    def update(self, current_time):
+        self.duck_animation_timer = current_time
+        self.current_duck_index += 1
+        if self.current_duck_index > len(self.duck_images) - 1:
+            self.current_duck_index = 0
+
+        if self.duck_rect.left > screen_width or self.duck_rect.right < 0:
+            place()
+
+    def images(self):
+        duck_images = self.duck_images
+        duck_rect = self.duck_rect
+        return duck_images, duck_rect
+
+
+class Bunny:
+    def __init__(self):
+        self.name = 'Заяц'
+
+        self.duck_rect = pygame.Rect(0, 0, 0, 0)
+
+        (self.duck_image_1, self.duck_image_2, self.duck_image_3,
+         self.duck_image_4, self.duck_image_5, self.duck_image_6,
+         self.duck_image_7, self.duck_image_8) = (pygame.image.load('bunny1.png'),
+                                                                                      pygame.image.load('bunny2.png'),
+                                                                                      pygame.image.load('bunny3.png'),
+                                                                                      pygame.image.load('bunny4.png'),
+                                                                                      pygame.image.load('bunny5.png'),
+                                                                                      pygame.image.load('bunny6.png'),
+                                                                                      pygame.image.load('bunny7.png'),
+                                                                                      pygame.image.load('bunny8.png'))
+
+        self.duck_images = [self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4]
+
+        self.current_duck_index = 0
+
+        self.duck_rect = self.duck_images[self.current_duck_index].get_rect()
+
+        self.duck_rect.y = random.randint(900, screen_height- 100)
+
+        self.direction = random.choice([-1, 1])
+        if self.direction == 1:
+            self.duck_rect.x = -100
+        else:
+            self.duck_rect.x = screen_width - 150
+
+        self.clock = pygame.time.Clock()
+        self.duck_animation_timer = pygame.time.get_ticks()
+        self.bush_animation_timer = pygame.time.get_ticks()
+
+        if self.direction == -1:
+            self.duck_images = [pygame.transform.flip(self.duck_image_1, True, False),
+                                pygame.transform.flip(self.duck_image_2, True, False),
+                                pygame.transform.flip(self.duck_image_3, True, False),
+                                pygame.transform.flip(self.duck_image_4, True, False),
+                                pygame.transform.flip(self.duck_image_5, True, False),
+                                pygame.transform.flip(self.duck_image_6, True, False),
+                                pygame.transform.flip(self.duck_image_7, True, False),
+                                pygame.transform.flip(self.duck_image_8, True, False)]
+        else:
+            self.duck_images = [self.duck_image_1, self.duck_image_2, self.duck_image_3, self.duck_image_4,
+                                self.duck_image_5, self.duck_image_6, self.duck_image_7, self.duck_image_8]
+
+    def update(self, current_time):
+        self.duck_animation_timer = current_time
+        self.current_duck_index += 1
+        if self.current_duck_index > len(self.duck_images) - 1:
+            self.current_duck_index = 0
+
+        if self.duck_rect.left > screen_width or self.duck_rect.right < 0:
+            place()
+
+    def images(self):
+        duck_images = self.duck_images
+        duck_rect = self.duck_rect
+        return duck_images, duck_rect
+
+
+class Cloud:
+    def __init__(self):
+        self.cloud_image = pygame.image.load('cloud.png')
+        self.cloud_rect = self.cloud_image.get_rect()
+        self.direction = random.choice([-1, 1])
+
+    def place(self):
+        self.cloud_rect.y = random.randint(20, 300)
+        self.direction = random.choice([-1, 1])
+        if self.direction == 1:
+            self.cloud_rect.x = -100
+        else:
+            self.cloud_rect.x = screen_width - 150
+
+
+class Photo:
+    def __init__(self):
+        self.background = pygame.image.load('background_for_photo.png')
+
+    def run(self):
+        screen.blit(self.background, (0, 0))
+
+        font_name = pygame.font.Font(None, 150)
+        name = font.render(animal.name, True, black)
+        screen.blit(name, (825, 649))
+
+
+
+
+
+def place():
+    global animal
+
+    r = random.randint(1, 3)
+    print(r, '......')
+    if r == 1:
+        animal = Duck()
+    elif r == 2:
+        animal = Vorobey()
+    elif r == 3:
+        animal = Bunny()
+    animal.images()
+
+    if r == 1 or r == 2:
+        animal.duck_rect.y = random.randint(100, screen_height - 350)
+    elif r == 3:
+        animal.duck_rect.y = random.randint(700, screen_height - 200)
+
+
+def shot(score):
+    camera_sound.play()
+
+    fill()
+    if animal.duck_rect.collidepoint(event.pos):
+        photo = Photo()
+        photo.run()
+        pygame.time.delay(3000)
+        place()
+        score += 1
+        print('1')
+    return animal.duck_rect.x, score
+
+
+def fill():
+    global white, black, duck_rect, current_duck_index, duck_images
+
+    # Закрасить экран белым цветом
+    screen.fill(white)
+
+    # Сохранить копию прямоугольника утки
+    duck_rect_copy = animal.duck_rect.copy()
+
+    # Закрасить область прямоугольника утки черным цветом
+    pygame.draw.rect(screen, black, duck_rect_copy)
+
+    pygame.display.flip()
+
+    # Задержка на 3 секунды
+    pygame.time.delay(30)
+
+
+def shaking():
+    coords = (random.randint(497, 500), random.randint(497, 500))
+    return coords
+
+
+# Основной цикл игры
+running = True
+clock = pygame.time.Clock()
+duck_animation_timer = pygame.time.get_ticks()
+bush_animation_timer = pygame.time.get_ticks()
+start = True
+
+while running:
+    if start:
+        place()
+
+        cloud = Cloud()
+        cloud.place()
+
+        start = False
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Левая кнопка мыши
+            animal.duck_rect.x, score = shot(score)
+
+    # Проверить, если утка заходит за пределы экрана
+    if animal.duck_rect.left > screen_width or animal.duck_rect.right < 0:
+        place()
+
+    # Обновление анимации утки каждую секунду
+    current_time = pygame.time.get_ticks()
+    if current_time - animal.duck_animation_timer >= 200:
+        animal.update(current_time)
+
+    animal.duck_rect.move_ip(2 * animal.direction, 0)  # Обновление положения утки
+
+    # Отобразить фон на экране
+    background = pygame.image.load("background_for_project.png")
+    screen.blit(background, (0, 0))
+
+    current_duck_image = animal.duck_images[animal.current_duck_index]
+    screen.blit(current_duck_image, animal.duck_rect)  # Отобразить утку
+
+    if cloud.cloud_rect.left > screen_width or cloud.cloud_rect.right < 0:
+        cloud.place()
+
+    cloud.cloud_rect.move_ip(1 * cloud.direction, 0)
+
+    screen.blit(cloud.cloud_image, cloud.cloud_rect)
+
+    bush_image = pygame.image.load("bush.png")
+    coords = (500, 500)
+    if current_time - bush_animation_timer >= 400:
+        bush_animation_timer = current_time
+        coords = shaking()
+        screen.blit(bush_image, coords)
+    else:
+        screen.blit(bush_image, coords)
+
+    if 600 < animal.duck_rect.y < 900:
+        screen.blit(current_duck_image, animal.duck_rect)
+
+    # Отобразить счёт
+    font = pygame.font.Font(None, 36)
+    score_text = font.render("Score: " + str(score), True, black)
+    screen.blit(score_text, (10, 10))
+
+    pygame.display.flip()
+    clock.tick(60)
+
+# Завершение Pygame
+pygame.quit()
