@@ -225,7 +225,6 @@ def place():
     global animal
 
     r = random.randint(1, 3)
-    print(r, '......')
     if r == 1:
         animal = Duck()
     elif r == 2:
@@ -246,10 +245,9 @@ def shot(score):
     fill()
     if animal.duck_rect.collidepoint(event.pos):
         photo = Photo()
-        photo.run()
+        photo.run() 
         place()
         score += 1
-        print('1')
     return animal.duck_rect.x, score
 
 
