@@ -244,9 +244,11 @@ def shot(score):
     camera_sound.play()
 
     fill()
-    if animal.duck_rect.collidepoint(event.pos) and (670 < animal.duck_rect.y < 900 or
-                                                     (not (670 < animal.duck_rect.y < 900)
-                                                      and not (480 < animal.duck_rect.x < 880))):
+    if ((animal.duck_rect.collidepoint(event.pos)
+            and (670 < animal.duck_rect.y < 900 or (not (670 < animal.duck_rect.y < 900) and
+                                                    not (480 < animal.duck_rect.x < 880)))) and
+            (not (cloud.cloud_rect.x - 40 < animal.duck_rect.x < cloud.cloud_rect.x + 350) or
+             (not (cloud.cloud_rect.y - 150 < animal.duck_rect.y < cloud.cloud_rect.y + 350)))):
         photo = Photo()
         photo.run()
         place()
@@ -302,7 +304,7 @@ while running:
     if current_time - animal.duck_animation_timer >= 200:
         animal.update(current_time)
 
-    animal.duck_rect.move_ip(2 * animal.direction, 0)
+    animal.duck_rect.move_ip(1 * animal.direction, 0)
 
     background = pygame.image.load("background_for_project.png")
     screen.blit(background, (0, 0))
