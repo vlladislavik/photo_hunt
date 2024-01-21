@@ -157,10 +157,13 @@ class Bunny:
         self.duck_rect.y = random.randint(900, screen_height- 100)
 
         self.direction = random.choice([-1, 1])
-        if self.direction == 1:
+        self.spawn_behind = random.randint(0, 1)
+        if self.direction == 1 and self.spawn_behind == 0:
             self.duck_rect.x = -100
-        else:
+        elif self.direction == -1 and self.spawn_behind == 0:
             self.duck_rect.x = screen_width - 150
+        elif self.spawn_behind == 1:
+            self.duck_rect.x = 650
 
         self.clock = pygame.time.Clock()
         self.duck_animation_timer = pygame.time.get_ticks()
@@ -237,7 +240,10 @@ def place():
     if r == 1 or r == 2:
         animal.duck_rect.y = random.randint(100, screen_height - 350)
     elif r == 3:
-        animal.duck_rect.y = random.randint(700, screen_height - 200)
+        if animal.spawn_behind == 1:
+            animal.duck_rect.y = 630
+        else:
+            animal.duck_rect.y = random.randint(700, screen_height - 200)
 
 
 def shot(score):
@@ -247,8 +253,9 @@ def shot(score):
     if ((animal.duck_rect.collidepoint(event.pos)
             and (670 < animal.duck_rect.y < 900 or (not (670 < animal.duck_rect.y < 900) and
                                                     not (480 < animal.duck_rect.x < 880)))) and
-            (not (cloud.cloud_rect.x - 40 < animal.duck_rect.x < cloud.cloud_rect.x + 350) or
-             (not (cloud.cloud_rect.y - 150 < animal.duck_rect.y < cloud.cloud_rect.y + 350)))):
+            (not (cloud.cloud_rect.x - 40 < animal.duck_rect.x < cloud.cloud_rect.x + 340) or
+            (not (cloud.cloud_rect.y - 100 < animal.duck_rect.y < cloud.cloud_rect.y + 280))) and
+            (not (625 < animal.duck_rect.y < 764) or not (1141 < animal.duck_rect.x < 1569))):
         photo = Photo()
         photo.run()
         place()
@@ -304,7 +311,7 @@ while running:
     if current_time - animal.duck_animation_timer >= 200:
         animal.update(current_time)
 
-    animal.duck_rect.move_ip(1 * animal.direction, 0)
+    animal.duck_rect.move_ip(4 * animal.direction, 0)
 
     background = pygame.image.load("background_for_project.png")
     screen.blit(background, (0, 0))
@@ -328,7 +335,12 @@ while running:
     else:
         screen.blit(bush_image, coords)
 
-    if 670 < animal.duck_rect.y < 900:
+    wood_image = pygame.image.load("wood.png")
+    wood_coords = (1167, 813)
+    screen.blit(wood_image, wood_coords)
+
+    if ((670 < animal.duck_rect.y < 900 and (480 < animal.duck_rect.x < 880)) or
+            (animal.duck_rect.y > 773 and (1130 < animal.duck_rect.x < 1835))):
         screen.blit(current_duck_image, animal.duck_rect)
 
     font = pygame.font.Font(None, 36)
