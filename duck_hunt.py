@@ -244,7 +244,9 @@ def shot(score):
     camera_sound.play()
 
     fill()
-    if animal.duck_rect.collidepoint(event.pos):
+    if animal.duck_rect.collidepoint(event.pos) and (670 < animal.duck_rect.y < 900 or
+                                                     (not (670 < animal.duck_rect.y < 900)
+                                                      and not (480 < animal.duck_rect.x < 880))):
         photo = Photo()
         photo.run()
         place()
@@ -324,7 +326,7 @@ while running:
     else:
         screen.blit(bush_image, coords)
 
-    if 600 < animal.duck_rect.y < 900:
+    if 670 < animal.duck_rect.y < 900:
         screen.blit(current_duck_image, animal.duck_rect)
 
     font = pygame.font.Font(None, 36)
