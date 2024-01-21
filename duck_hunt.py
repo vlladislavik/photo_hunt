@@ -17,6 +17,7 @@ pygame.display.set_caption("Фотоохота")
 
 white = (255, 255, 255)
 black = (0, 0, 0)
+yellow = (234, 255, 0)
 
 score = 0
 
@@ -343,8 +344,8 @@ while running:
             (animal.duck_rect.y > 773 and (1130 < animal.duck_rect.x < 1835))):
         screen.blit(current_duck_image, animal.duck_rect)
 
-    font = pygame.font.Font(None, 36)
-    score_text = font.render("Score: " + str(score), True, black)
+    font = pygame.font.Font('UpheavalPro.ttf', 98)
+    score_text = font.render("Score: " + str(score), True, yellow)
     screen.blit(score_text, (10, 10))
 
     pygame.display.flip()
