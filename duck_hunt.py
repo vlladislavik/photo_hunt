@@ -322,10 +322,6 @@ while running:
     if current_time - animal.duck_animation_timer >= 200:
         animal.update(current_time)
 
-    # if current_time - birds_sound_timer >= 1190:
-    #     birds_sound.stop()
-    #     birds_sound.play()
-
     animal.duck_rect.move_ip(4 * animal.direction, 0)
 
     background = pygame.image.load("background_for_project.png")
