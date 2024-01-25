@@ -10,13 +10,22 @@ pygame.mixer.music.load('background_music.wav')
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.2)
 
+birds_sound = pygame.mixer.Sound('birds_sound.mp3')
+leaves_sound = pygame.mixer.Sound('shelest_listvy.mp3')
 camera_sound = pygame.mixer.Sound('camera_sound.wav')
+
+background_music_channel = pygame.mixer.Channel(0)
+birds_sound_channel = pygame.mixer.Channel(1)
+
+background_music_channel.play(pygame.mixer.Sound('birds_sound.mp3'), loops=-1)
+background_music_channel.set_volume(0.2)
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Фотоохота")
 
 white = (255, 255, 255)
 black = (0, 0, 0)
+yellow = (234, 255, 0)
 
 score = 0
 
@@ -157,10 +166,14 @@ class Bunny:
         self.duck_rect.y = random.randint(900, screen_height- 100)
 
         self.direction = random.choice([-1, 1])
-        if self.direction == 1:
+        self.spawn_behind = random.randint(0, 1)
+        if self.direction == 1 and self.spawn_behind == 0:
             self.duck_rect.x = -100
-        else:
+        elif self.direction == -1 and self.spawn_behind == 0:
             self.duck_rect.x = screen_width - 150
+        elif self.spawn_behind == 1:
+            self.duck_rect.x = 635
+            leaves_sound.play()
 
         self.clock = pygame.time.Clock()
         self.duck_animation_timer = pygame.time.get_ticks()
@@ -236,14 +249,22 @@ def place():
     if r == 1 or r == 2:
         animal.duck_rect.y = random.randint(100, screen_height - 350)
     elif r == 3:
-        animal.duck_rect.y = random.randint(700, screen_height - 200)
+        if animal.spawn_behind == 1:
+            animal.duck_rect.y = 630
+        else:
+            animal.duck_rect.y = random.randint(700, screen_height - 200)
 
 
 def shot(score):
     camera_sound.play()
 
     fill()
-    if animal.duck_rect.collidepoint(event.pos):
+    if ((animal.duck_rect.collidepoint(event.pos)
+            and (670 < animal.duck_rect.y < 900 or (not (670 < animal.duck_rect.y < 900) and
+                                                    not (480 < animal.duck_rect.x < 880)))) and
+            (not (cloud.cloud_rect.x - 40 < animal.duck_rect.x < cloud.cloud_rect.x + 285) or
+            (not (cloud.cloud_rect.y - 100 < animal.duck_rect.y < cloud.cloud_rect.y + 280))) and
+            (not (630 < animal.duck_rect.y < 764) or not (1141 < animal.duck_rect.x < 1569))):
         photo = Photo()
         photo.run() 
         place()
@@ -274,11 +295,14 @@ running = True
 clock = pygame.time.Clock()
 duck_animation_timer = pygame.time.get_ticks()
 bush_animation_timer = pygame.time.get_ticks()
+birds_sound_timer = pygame.time.get_ticks()
 start = True
 
 while running:
     if start:
         place()
+
+        birds_sound.play().set_volume(0.4)
 
         cloud = Cloud()
         cloud.place()
@@ -298,7 +322,11 @@ while running:
     if current_time - animal.duck_animation_timer >= 200:
         animal.update(current_time)
 
-    animal.duck_rect.move_ip(2 * animal.direction, 0)
+    # if current_time - birds_sound_timer >= 1190:
+    #     birds_sound.stop()
+    #     birds_sound.play()
+
+    animal.duck_rect.move_ip(4 * animal.direction, 0)
 
     background = pygame.image.load("background_for_project.png")
     screen.blit(background, (0, 0))
@@ -322,11 +350,16 @@ while running:
     else:
         screen.blit(bush_image, coords)
 
-    if 600 < animal.duck_rect.y < 900:
+    wood_image = pygame.image.load("wood.png")
+    wood_coords = (1167, 813)
+    screen.blit(wood_image, wood_coords)
+
+    if ((670 < animal.duck_rect.y < 900 and (385 < animal.duck_rect.x < 880)) or
+            (animal.duck_rect.y > 773 and (1130 < animal.duck_rect.x < 1835))):
         screen.blit(current_duck_image, animal.duck_rect)
 
-    font = pygame.font.Font(None, 36)
-    score_text = font.render("Score: " + str(score), True, black)
+    font = pygame.font.Font('UpheavalPro.ttf', 98)
+    score_text = font.render("Score: " + str(score), True, yellow)
     screen.blit(score_text, (10, 10))
 
     pygame.display.flip()
