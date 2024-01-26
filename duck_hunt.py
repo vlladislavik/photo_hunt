@@ -234,6 +234,17 @@ class Photo:
         screen.blit(name, (825, 649))
 
 
+def photo():
+    background = pygame.image.load('background_for_photo.png')
+    screen.blit(background, (0, 0))
+
+    font_name = pygame.font.Font(None, 150)
+    name = font.render(animal.name, True, black)
+    screen.blit(name, (825, 649))
+
+    pygame.time.delay(1000)
+
+
 def place():
     global animal
 
@@ -265,8 +276,7 @@ def shot(score):
             (not (cloud.cloud_rect.x - 40 < animal.duck_rect.x < cloud.cloud_rect.x + 285) or
             (not (cloud.cloud_rect.y - 100 < animal.duck_rect.y < cloud.cloud_rect.y + 280))) and
             (not (630 < animal.duck_rect.y < 764) or not (1141 < animal.duck_rect.x < 1569))):
-        photo = Photo()
-        photo.run()
+        photo()
         place()
         score += 1
     return animal.duck_rect.x, score
@@ -321,10 +331,6 @@ while running:
     current_time = pygame.time.get_ticks()
     if current_time - animal.duck_animation_timer >= 200:
         animal.update(current_time)
-
-    # if current_time - birds_sound_timer >= 1190:
-    #     birds_sound.stop()
-    #     birds_sound.play()
 
     animal.duck_rect.move_ip(4 * animal.direction, 0)
 
