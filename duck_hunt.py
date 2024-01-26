@@ -242,8 +242,6 @@ def photo():
     name = font.render(animal.name, True, black)
     screen.blit(name, (825, 649))
 
-    pygame.time.delay(1000)
-
 
 def place():
     global animal
@@ -320,7 +318,7 @@ while running:
         start = False
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_q]:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             animal.duck_rect.x, score = shot(score)
